@@ -24,6 +24,8 @@ import LocationPicker from "../components/LocationPicker";
 import MarketplaceSidebar from "../components/MarketplaceSideBar";
 
 const categories = ["Books", "Electronics", "Services", "Clothing", "Other"];
+const universities = ["IUT", "BUET", "DU", "NSU", "BRAC"]; // Add as needed
+const conditions = ["New", "Like New", "Good", "Fair", "Poor"];
 
 const Marketplace = ({ user }) => {
   const navigate = useNavigate();
@@ -46,18 +48,20 @@ const Marketplace = ({ user }) => {
     search: "",
     category: "",
     university: "",
-    priceRange: [0, 1000],
+    minPrice: "",
+    maxPrice: "",
+    condition: "",
   });
   const [locationModalOpen, setLocationModalOpen] = useState(false);
 
   // Fetch listings
   useEffect(() => {
     setLoading(true);
-    getListings()
+    getListings(filters)
       .then((data) => setListings(data))
       .catch(() => setSnackbar("Failed to load listings"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [filters]);
 
   // Handle form changes
   const handleFormChange = (e) => {
@@ -160,9 +164,10 @@ const Marketplace = ({ user }) => {
 
   // Filter handlers
   const handleFilterChange = (event) => {
+    const { name, value } = event.target;
     setFilters((prev) => ({
       ...prev,
-      [event.target.name]: event.target.value,
+      [name]: value,
     }));
   };
 
@@ -180,7 +185,14 @@ const Marketplace = ({ user }) => {
   };
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f5f7fa" }}>
+    <Box
+      sx={{
+        display: "flex",
+        bgcolor: "#f5f7fa",
+        paddingTop: "88px",
+        minHeight: "100vh",
+      }}
+    >
       {/* Sidebar */}
       <MarketplaceSidebar />
 
@@ -189,20 +201,19 @@ const Marketplace = ({ user }) => {
         sx={{
           flex: 1,
           p: 4,
-          ml: `260px`,
           overflowY: "auto",
-          minHeight: "100vh",
           bgcolor: "#fff",
+          width: "calc(100% - 260px)", // Ensure it takes remaining width
         }}
       >
         {/* Filters */}
         <Box sx={{ mb: 4 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={3}>
               <TextField
                 fullWidth
                 name="search"
-                placeholder="Search listings..."
+                placeholder="Search product name..."
                 value={filters.search}
                 onChange={handleFilterChange}
                 InputProps={{
@@ -214,13 +225,21 @@ const Marketplace = ({ user }) => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Category</InputLabel>
+            <Grid item xs={12} md={2.5}>
+              <FormControl fullWidth sx={{ minWidth: 160 }}>
+                <InputLabel fullWidth>Category</InputLabel>
                 <Select
                   name="category"
                   value={filters.category}
                   onChange={handleFilterChange}
+                  fullWidth
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        minWidth: 160,
+                      },
+                    },
+                  }}
                 >
                   <MenuItem value="">All</MenuItem>
                   {categories.map((cat) => (
@@ -231,17 +250,75 @@ const Marketplace = ({ user }) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>University</InputLabel>
+            <Grid item xs={12} md={2.5}>
+              <FormControl fullWidth sx={{ minWidth: 160 }}>
+                <InputLabel fullWidth>University</InputLabel>
                 <Select
                   name="university"
                   value={filters.university}
                   onChange={handleFilterChange}
+                  fullWidth
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        minWidth: 160,
+                      },
+                    },
+                  }}
                 >
                   <MenuItem value="">All</MenuItem>
-                  <MenuItem value="IUT">IUT</MenuItem>
-                  {/* Add more universities */}
+                  {universities.map((uni) => (
+                    <MenuItem key={uni} value={uni}>
+                      {uni}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6} md={1.5}>
+              <TextField
+                label="Min Price"
+                name="minPrice"
+                type="number"
+                value={filters.minPrice}
+                onChange={handleFilterChange}
+                fullWidth
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+            <Grid item xs={6} md={1.5}>
+              <TextField
+                label="Max Price"
+                name="maxPrice"
+                type="number"
+                value={filters.maxPrice}
+                onChange={handleFilterChange}
+                fullWidth
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <FormControl fullWidth sx={{ minWidth: 160 }}>
+                <InputLabel fullWidth>Condition</InputLabel>
+                <Select
+                  name="condition"
+                  value={filters.condition}
+                  onChange={handleFilterChange}
+                  fullWidth
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        minWidth: 160,
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="">All</MenuItem>
+                  {conditions.map((cond) => (
+                    <MenuItem key={cond} value={cond}>
+                      {cond}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Grid>

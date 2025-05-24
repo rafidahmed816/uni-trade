@@ -20,9 +20,15 @@ api.interceptors.response.use(
 );
 
 // Get all listings
-export const getListings = async () => {
+export const getListings = async (filters = {}) => {
   try {
-    return await api.get('/listings');
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== "" && value != null) {
+        params.append(key, value);
+      }
+    });
+    return await api.get(`/listings?${params.toString()}`);
   } catch (error) {
     console.error('Error fetching listings:', error);
     throw error;

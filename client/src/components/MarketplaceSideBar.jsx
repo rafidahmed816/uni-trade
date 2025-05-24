@@ -25,12 +25,16 @@ const MarketplaceSidebar = () => (
         boxSizing: "border-box",
         bgcolor: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         color: "#fff",
+        top: "88px", // Position below navbar (navbar height + some padding)
+        height: "calc(100vh - 88px)", // Adjust height to fill remaining viewport
       },
     }}
     PaperProps={{
       sx: {
         background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         color: "#fff",
+        top: "88px", // Position below navbar
+        height: "calc(100vh - 88px)", // Adjust height to fill remaining viewport
       },
     }}
   >
