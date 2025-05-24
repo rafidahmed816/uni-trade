@@ -1,6 +1,6 @@
-
 const Listing = require('../models/Listing');
 
+// Create listing with new fields supported
 exports.createListing = async (req, res) => {
   try {
     const listingData = {
@@ -13,14 +13,27 @@ exports.createListing = async (req, res) => {
     await listing.save();
     res.status(201).json(listing);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: "Failed to create listing" });
   }
 };
 
+// Get listings with filtering and sorting options
 exports.getListings = async (req, res) => {
   try {
-    // Filters from query parameters
-    const { category, priceMin, priceMax, condition, university, visibility, search, page = 1, limit = 10 } = req.query;
+    const {
+      category,
+      priceMin,
+      priceMax,
+      condition,
+      university,
+      visibility,
+      search,
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',       // e.g., 'createdAt', 'price', 'viewsCount', 'rating'
+      sortOrder = 'desc'          // 'asc' or 'desc'
+    } = req.query;
 
     let filter = {};
 
@@ -42,13 +55,17 @@ exports.getListings = async (req, res) => {
       ];
     }
 
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
     const listings = await Listing.find(filter)
       .skip((page - 1) * limit)
       .limit(Number(limit))
-      .sort({ createdAt: -1 });
+      .sort(sortOptions);
 
     res.json(listings);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ msg: "Failed to get listings" });
   }
 };

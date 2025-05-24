@@ -3,29 +3,49 @@ const mongoose = require('mongoose');
 const listingSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: String,
-  category: { type: String, required: true },        // e.g., "Books", "Electronics", "Services"
-  subcategory: String,                                // optional
-  condition: {                                        // condition of item/service
+  category: { type: String, required: true },          // e.g., Books, Electronics, Services
+  subcategory: String,
+  condition: {
     type: String,
     enum: ['New', 'Like New', 'Good', 'Fair', 'Poor'],
-    default: 'Good'
+    default: 'Good',
   },
-  priceType: {                                        // price model: fixed, bidding, hourly
+  listingType: {
+    type: String,
+    enum: ['Single', 'Bundle', 'Digital', 'Recurring'],
+    default: 'Single',
+  },
+  bundleItems: [{                                        // For bundle listings
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Listing',
+  }],
+  priceType: {
     type: String,
     enum: ['Fixed', 'Bidding', 'Hourly'],
     default: 'Fixed',
   },
-  price: Number,                                      // for fixed price or starting bid
+  price: Number,
+  reservePrice: Number,                                 // Minimum bid price (for bidding)
+  buyNowPrice: Number,                                 // Instant buy price (optional)
+  discountCode: String,                                // Optional coupon/discount code
+  paymentTerms: String,                                // e.g., 'Installments allowed'
   seller: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  visibility: {                                       // visibility mode
+  visibility: {
     type: String,
-    enum: ['University', 'All'],
+    enum: ['University', 'All', 'CustomGroups'],
     default: 'University',
   },
-  university: String,                                 // seller's university, for filtering
-  images: [String],                                   // URLs or file paths
+  customGroups: [String],                              // Array of group IDs or names (if CustomGroups)
+  university: String,
+  geofenceRadius: Number,                              // in meters (for geofencing)
+  anonymized: { type: Boolean, default: false },       // Hide seller identity
+  verifiedListing: { type: Boolean, default: false },  // Badge for verified listings
+  images: [String],                                    // URLs or paths
   createdAt: { type: Date, default: Date.now },
-  expiresAt: Date,                                    // optional expiry date
+  expiresAt: Date,
+  recurringInterval: String,                           // e.g., 'Weekly', 'Monthly' for recurring services
+  viewsCount: { type: Number, default: 0 },            // For popularity sorting
+  rating: { type: Number, default: 0 },                // Average seller rating (can be calculated)
 });
 
 module.exports = mongoose.model('Listing', listingSchema);
