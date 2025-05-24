@@ -13,7 +13,6 @@ import Marketplace from "./pages/Marketplace";
 import ProductDetails from "./pages/ProductDetails";
 import RegisterPage from "./pages/RegisterPage";
 import "./styles/main.css";
-
 const AppRoutes = ({ user, setUser }) => {
   const navigate = useNavigate();
 

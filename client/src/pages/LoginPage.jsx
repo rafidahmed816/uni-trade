@@ -17,7 +17,6 @@ const LoginPage = ({ onRegisterClick, onLoginSuccess }) => {
     try {
       const data = await login(form);
       console.log("Login response from backend:", data); // DEBUG
-
       if (data.token) {
         localStorage.setItem("token", data.token);
         console.log("Token saved to localStorage:", data.token); // DEBUG

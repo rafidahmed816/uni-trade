@@ -25,6 +25,8 @@ exports.createListing = [
         seller: req.user.id,
         university: req.user.university,
         images: imageUrls,
+        latitude: req.body.latitude,
+        longitude: req.body.longitude,
       };
 
       const listing = new Listing(listingData);
@@ -90,8 +92,12 @@ exports.getListings = async (req, res) => {
 // READ: Get a single listing by ID
 exports.getListingById = async (req, res) => {
   try {
-    const listing = await Listing.findById(req.params.id);
-    if (!listing) return res.status(404).json({ msg: "Listing not found" });
+    const listing = await Listing.findById(req.params.id)
+      .populate('seller', 'name university'); // Add fields you want from seller
+      
+    if (!listing) {
+      return res.status(404).json({ msg: "Listing not found" });
+    }
     res.json(listing);
   } catch (err) {
     console.error(err);
@@ -136,4 +142,12 @@ exports.deleteListing = async (req, res) => {
     console.error(err);
     res.status(500).json({ msg: "Failed to delete listing" });
   }
+};
+
+// Validate location coordinates middleware
+exports.validateLocation = (req, res, next) => {
+  if (!req.body.location || !req.body.location.coordinates) {
+    return res.status(400).json({ msg: "Location is required." });
+  }
+  next();
 };

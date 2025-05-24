@@ -46,6 +46,15 @@ const listingSchema = new mongoose.Schema({
   recurringInterval: String,                           // e.g., 'Weekly', 'Monthly' for recurring services
   viewsCount: { type: Number, default: 0 },            // For popularity sorting
   rating: { type: Number, default: 0 },                // Average seller rating (can be calculated)
+  latitude: {
+    type: Number,
+    required: true,
+  },
+  longitude: {
+    type: Number,
+    required: true,
+  },
+  address: String,
 });
 
 module.exports = mongoose.model('Listing', listingSchema);
