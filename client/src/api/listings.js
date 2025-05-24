@@ -16,8 +16,20 @@ export const getListingById = async (id) => {
 
 // Create a new listing
 export const postListing = async (listing, token) => {
-  const res = await axios.post(`${baseURL}/api/listings`, listing, {
-    headers: { Authorization: `Bearer ${token}` },
+  const formData = new FormData();
+  Object.entries(listing).forEach(([key, value]) => {
+    if (key === 'images') {
+      value.forEach((file) => formData.append('images', file));
+    } else {
+      formData.append(key, value);
+    }
+  });
+
+  const res = await axios.post(`${baseURL}/api/listings`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
   });
   return res.data;
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { login } from "../api/auth";
 
 const LoginPage = ({ onRegisterClick, onLoginSuccess }) => {
@@ -12,25 +12,25 @@ const LoginPage = ({ onRegisterClick, onLoginSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
-
+    setError("");
     try {
       const data = await login(form);
-      if (data.error) {
-        setError(data.error);
-      } else {
-        // Always save the new token after login
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-        }
+      console.log("Login response from backend:", data); // DEBUG
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        console.log("Token saved to localStorage:", data.token); // DEBUG
         if (onLoginSuccess) onLoginSuccess(data);
+      } else {
+        setError(data.msg || "Login failed");
+        console.log("No token in response, error:", data.msg); // DEBUG
       }
     } catch (err) {
-      setError("Login failed. Please try again.");
-    } finally {
-      setLoading(false);
+      setError("Login failed");
+      console.log("Login error:", err); // DEBUG
     }
+    setLoading(false);
   };
 
   return (
@@ -60,11 +60,7 @@ const LoginPage = ({ onRegisterClick, onLoginSuccess }) => {
       </form>
       <p className="auth-link">
         Don't have an account?{" "}
-        <button
-          type="button"
-          className="link-btn"
-          onClick={onRegisterClick}
-        >
+        <button type="button" className="link-btn" onClick={onRegisterClick}>
           Register
         </button>
       </p>

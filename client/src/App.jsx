@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import Marketplace from "./pages/Marketplace";
+import ProductDetails from "./pages/ProductDetails";
 import RegisterPage from "./pages/RegisterPage";
 import "./styles/main.css";
 
@@ -75,6 +76,10 @@ const AppRoutes = ({ user, setUser }) => {
           element={
             user ? <Marketplace user={user} /> : <Navigate to="/login" />
           }
+        />
+        <Route
+          path="/marketplace/:id"
+          element={user ? <ProductDetails /> : <Navigate to="/login" />}
         />
         <Route path="*" element={<Navigate to={user ? "/home" : "/login"} />} />
       </Routes>

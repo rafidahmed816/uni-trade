@@ -34,7 +34,6 @@ exports.login = async (req, res) => {
 
     const payload = { user: { id: user.id, isAdmin: user.isAdmin } };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
-
     res.json({ token });
   } catch (err) {
     res.status(500).send("Server error");

@@ -40,7 +40,7 @@ const listingSchema = new mongoose.Schema({
   geofenceRadius: Number,                              // in meters (for geofencing)
   anonymized: { type: Boolean, default: false },       // Hide seller identity
   verifiedListing: { type: Boolean, default: false },  // Badge for verified listings
-  images: [String],                                    // URLs or paths
+  images: [String], // Array of Cloudinary URLs
   createdAt: { type: Date, default: Date.now },
   expiresAt: Date,
   recurringInterval: String,                           // e.g., 'Weekly', 'Monthly' for recurring services

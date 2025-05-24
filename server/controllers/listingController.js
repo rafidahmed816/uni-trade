@@ -1,21 +1,41 @@
+const cloudinary = require('../config/cloudinary');
 const Listing = require('../models/Listing');
+const multer = require('multer');
+const fs = require('fs');
+
+// Multer setup for file uploads
+const upload = multer({ dest: 'uploads/' });
 
 // CREATE a new listing
-exports.createListing = async (req, res) => {
-  try {
-    const listingData = {
-      ...req.body,
-      seller: req.user.id,
-      university: req.user.university,
-    };
-    const listing = new Listing(listingData);
-    await listing.save();
-    res.status(201).json(listing);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ msg: "Failed to create listing" });
+exports.createListing = [
+  upload.array('images', 5), // Accept up to 5 images
+  async (req, res) => {
+    try {
+      const imageUrls = [];
+      for (const file of req.files) {
+        const result = await cloudinary.uploader.upload(file.path, {
+          folder: 'uni-trade-listings',
+        });
+        imageUrls.push(result.secure_url);
+        fs.unlinkSync(file.path); // Remove file after upload
+      }
+
+      const listingData = {
+        ...req.body,
+        seller: req.user.id,
+        university: req.user.university,
+        images: imageUrls,
+      };
+
+      const listing = new Listing(listingData);
+      await listing.save();
+      res.status(201).json(listing);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ msg: "Failed to create listing" });
+    }
   }
-};
+];
 
 // READ: Get all listings with filtering, sorting, and pagination
 exports.getListings = async (req, res) => {
@@ -55,6 +75,7 @@ exports.getListings = async (req, res) => {
     sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
 
     const listings = await Listing.find(filter)
+      .populate('seller', 'name university') // Add fields you want from seller
       .skip((page - 1) * limit)
       .limit(Number(limit))
       .sort(sortOptions);
