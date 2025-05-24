@@ -3,22 +3,13 @@ const Listing = require('../models/Listing');
 const multer = require('multer');
 const fs = require('fs');
 
-// Multer setup for file uploads
-const upload = multer({ dest: 'uploads/' });
-
 // CREATE a new listing
 exports.createListing = [
-  upload.array('images', 5), // Accept up to 5 images
   async (req, res) => {
     try {
-      const imageUrls = [];
-      for (const file of req.files) {
-        const result = await cloudinary.uploader.upload(file.path, {
-          folder: 'uni-trade-listings',
-        });
-        imageUrls.push(result.secure_url);
-        fs.unlinkSync(file.path); // Remove file after upload
-      }
+      console.log("Request body received:", req.body); // Debugging log
+
+      const imageUrls = req.body.images || []; // Ensure images are extracted correctly
 
       const listingData = {
         ...req.body,
@@ -33,10 +24,10 @@ exports.createListing = [
       await listing.save();
       res.status(201).json(listing);
     } catch (err) {
-      console.error(err);
+      console.error("Error creating listing:", err);
       res.status(500).json({ msg: "Failed to create listing" });
     }
-  }
+  },
 ];
 
 // READ: Get all listings with filtering, sorting, and pagination
