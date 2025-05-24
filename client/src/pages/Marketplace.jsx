@@ -227,7 +227,7 @@ const Marketplace = ({ user }) => {
             </Grid>
             <Grid item xs={12} md={2.5}>
               <FormControl fullWidth sx={{ minWidth: 160 }}>
-                <InputLabel fullWidth>Category</InputLabel>
+                <InputLabel>Category</InputLabel>
                 <Select
                   name="category"
                   value={filters.category}
@@ -252,7 +252,7 @@ const Marketplace = ({ user }) => {
             </Grid>
             <Grid item xs={12} md={2.5}>
               <FormControl fullWidth sx={{ minWidth: 160 }}>
-                <InputLabel fullWidth>University</InputLabel>
+                <InputLabel>University</InputLabel>
                 <Select
                   name="university"
                   value={filters.university}
@@ -299,7 +299,7 @@ const Marketplace = ({ user }) => {
             </Grid>
             <Grid item xs={12} md={2}>
               <FormControl fullWidth sx={{ minWidth: 160 }}>
-                <InputLabel fullWidth>Condition</InputLabel>
+                <InputLabel>Condition</InputLabel>
                 <Select
                   name="condition"
                   value={filters.condition}
