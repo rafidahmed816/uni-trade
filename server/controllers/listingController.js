@@ -42,25 +42,50 @@ exports.createListing = [
 // READ: Get all listings with filtering, sorting, and pagination
 exports.getListings = async (req, res) => {
   try {
-    const { search, category, university, minPrice, maxPrice, condition } = req.query;
-    const filter = {};
+    const {
+      category,
+      priceMin,
+      priceMax,
+      condition,
+      university,
+      visibility,
+      search,
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = req.query;
 
-    if (search) {
-      filter.title = { $regex: search, $options: "i" };
-    }
+    let filter = {};
     if (category) filter.category = category;
-    if (university) filter.university = university;
     if (condition) filter.condition = condition;
-    if (minPrice || maxPrice) {
+    if (university) filter.university = university;
+    if (visibility) filter.visibility = visibility;
+    if (priceMin || priceMax) {
       filter.price = {};
-      if (minPrice) filter.price.$gte = Number(minPrice);
-      if (maxPrice) filter.price.$lte = Number(maxPrice);
+      if (priceMin) filter.price.$gte = Number(priceMin);
+      if (priceMax) filter.price.$lte = Number(priceMax);
+    }
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } }
+      ];
     }
 
-    const listings = await Listing.find(filter).sort({ createdAt: -1 });
+    const sortOptions = {};
+    sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const listings = await Listing.find(filter)
+      .populate('seller', 'name university') // Add fields you want from seller
+      .skip((page - 1) * limit)
+      .limit(Number(limit))
+      .sort(sortOptions);
+
     res.json(listings);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ msg: "Failed to get listings" });
   }
 };
 

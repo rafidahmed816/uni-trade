@@ -29,29 +29,30 @@ const ListingCard = ({ listing, onClick }) => (
       component="img"
       height="180"
       image={
-        listing.images?.[0] || "https://via.placeholder.com/300x180?text=No+Image"
+        listing.images?.[0] ||
+        "https://via.placeholder.com/300x180?text=No+Image"
       }
       alt={listing.title}
-      sx={{ 
+      sx={{
         objectFit: "cover",
-        backgroundColor: "#f5f5f5"
+        backgroundColor: "#f5f5f5",
       }}
     />
-    <CardContent 
-      sx={{ 
+    <CardContent
+      sx={{
         flexGrow: 1,
         p: 2,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
       }}
     >
       <Box>
-        <Typography 
-          gutterBottom 
-          variant="h6" 
+        <Typography
+          gutterBottom
+          variant="h6"
           component="div"
-          sx={{ 
+          sx={{
             fontWeight: 600,
             fontSize: "1.1rem",
             lineHeight: 1.3,
@@ -60,49 +61,54 @@ const ListingCard = ({ listing, onClick }) => (
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
-            minHeight: "2.6rem"
+            minHeight: "2.6rem",
           }}
         >
           {listing.title}
         </Typography>
-        <Typography 
-          variant="h6" 
-          color="primary" 
-          sx={{ 
+        <Typography
+          variant="h6"
+          color="primary"
+          sx={{
             fontWeight: 700,
             fontSize: "1.25rem",
-            mb: 1
+            mb: 1,
           }}
         >
           ${listing.price}
         </Typography>
       </Box>
-      
+
       <Box sx={{ display: "flex", alignItems: "center", mt: "auto" }}>
-        <Avatar 
-          sx={{ 
-            width: 28, 
-            height: 28, 
+        <Avatar
+          sx={{
+            width: 28,
+            height: 28,
             mr: 1.5,
             bgcolor: "primary.main",
-            fontSize: "0.875rem"
+            fontSize: "0.875rem",
           }}
         >
           {listing.seller?.name?.[0]?.toUpperCase() || "?"}
         </Avatar>
-        <Typography 
-          variant="body2" 
+        <Typography
+          variant="body2"
           color="text.secondary"
-          sx={{ 
+          sx={{
             fontWeight: 500,
             overflow: "hidden",
             textOverflow: "ellipsis",
-            whiteSpace: "nowrap"
+            whiteSpace: "nowrap",
           }}
         >
           {listing.seller?.name || "Unknown Seller"}
         </Typography>
       </Box>
+      {listing.address && (
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          📍 {listing.address}
+        </Typography>
+      )}
     </CardContent>
   </Card>
 );

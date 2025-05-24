@@ -155,6 +155,14 @@ const ListingForm = ({
           </Typography>
         )}
       </Box>
+      <TextField
+        label="Address"
+        name="address"
+        value={form.address}
+        onChange={handleFormChange}
+        fullWidth
+        sx={{ mb: 2 }}
+      />
       <Button
         type="submit"
         variant="contained"
