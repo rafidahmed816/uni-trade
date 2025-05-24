@@ -13,6 +13,7 @@ import {
   Grid,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   MenuItem,
@@ -141,23 +142,29 @@ const Marketplace = ({ user }) => {
             Marketplace
           </Typography>
           <List>
-            <ListItem button>
-              <ListItemIcon sx={{ color: "#fff" }}>
-                <ChatIcon />
-              </ListItemIcon>
-              <ListItemText primary="Messages" />
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon sx={{ color: "#fff" }}>
+                  <ChatIcon />
+                </ListItemIcon>
+                <ListItemText primary="Messages" />
+              </ListItemButton>
             </ListItem>
-            <ListItem button>
-              <ListItemIcon sx={{ color: "#fff" }}>
-                <ListAltIcon />
-              </ListItemIcon>
-              <ListItemText primary="My Listings" />
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon sx={{ color: "#fff" }}>
+                  <ListAltIcon />
+                </ListItemIcon>
+                <ListItemText primary="My Listings" />
+              </ListItemButton>
             </ListItem>
-            <ListItem button>
-              <ListItemIcon sx={{ color: "#fff" }}>
-                <MapIcon />
-              </ListItemIcon>
-              <ListItemText primary="Meeting Maps" />
+            <ListItem disablePadding>
+              <ListItemButton>
+                <ListItemIcon sx={{ color: "#fff" }}>
+                  <MapIcon />
+                </ListItemIcon>
+                <ListItemText primary="Meeting Maps" />
+              </ListItemButton>
             </ListItem>
           </List>
         </Box>

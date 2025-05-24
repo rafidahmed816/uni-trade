@@ -1,21 +1,22 @@
 import axios from "axios";
 
 const baseURL = "http://localhost:5000";
+
 // Get all listings
 export const getListings = async () => {
-  const res = await api.get(`${baseURL}/api/listings`);
+  const res = await axios.get(`${baseURL}/api/listings`);
   return res.data;
 };
 
 // Get a single listing by ID
 export const getListingById = async (id) => {
-  const res = await api.get(`${baseURL}/api/listings/${id}`);
+  const res = await axios.get(`${baseURL}/api/listings/${id}`);
   return res.data;
 };
 
 // Create a new listing
 export const postListing = async (listing, token) => {
-  const res = await api.post(`${baseURL}/api/listings`, listing, {
+  const res = await axios.post(`${baseURL}/api/listings`, listing, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
@@ -23,7 +24,7 @@ export const postListing = async (listing, token) => {
 
 // Update a listing by ID
 export const updateListing = async (id, listing, token) => {
-  const res = await api.put(`${baseURL}/api/listings/${id}`, listing, {
+  const res = await axios.put(`${baseURL}/api/listings/${id}`, listing, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;
@@ -31,7 +32,7 @@ export const updateListing = async (id, listing, token) => {
 
 // Delete a listing by ID
 export const deleteListing = async (id, token) => {
-  const res = await api.delete(`${baseURL}/api/listings/${id}`, {
+  const res = await axios.delete(`${baseURL}/api/listings/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;

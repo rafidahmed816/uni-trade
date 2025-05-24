@@ -20,7 +20,10 @@ const LoginPage = ({ onRegisterClick, onLoginSuccess }) => {
       if (data.error) {
         setError(data.error);
       } else {
-        alert("Login successful!");
+        // Always save the new token after login
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
         if (onLoginSuccess) onLoginSuccess(data);
       }
     } catch (err) {
