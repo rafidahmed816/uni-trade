@@ -16,11 +16,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getListingById } from "../api/listings";
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -85,8 +86,8 @@ const ProductDetails = () => {
   }
 
   const handleChat = () => {
-    // Implement chat functionality
-    console.log("Chat with seller");
+    // Navigate to chat page with seller's id and listing id
+    navigate(`/chat/${listing.seller._id}?listing=${listing._id}`);
   };
 
   return (

@@ -14,6 +14,7 @@ import Marketplace from "./pages/Marketplace";
 import ProductDetails from "./pages/ProductDetails";
 import RegisterPage from "./pages/RegisterPage";
 import "./styles/main.css";
+import ChatPage from "./pages/ChatPage";
 
 const AppRoutes = ({ user, setUser }) => {
   const navigate = useNavigate();
@@ -89,6 +90,7 @@ const AppRoutes = ({ user, setUser }) => {
           path="*"
           element={user ? <div>404 Not Found</div> : <Navigate to="/login" />}
         />
+        <Route path="/chat/:sellerId" element={<ChatPage user={user} />} />
       </Routes>
     </>
   );
