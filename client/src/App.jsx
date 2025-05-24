@@ -1,45 +1,94 @@
-import React, { useState } from "react";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
+import { useState } from "react";
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
+import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import Marketplace from "./pages/Marketplace";
+import RegisterPage from "./pages/RegisterPage";
 import "./styles/main.css";
 
-const App = () => {
-  const [currentPage, setCurrentPage] = useState("login");
-  const [user, setUser] = useState(null);
+const AppRoutes = ({ user, setUser }) => {
+  const navigate = useNavigate();
 
   const handleLoginSuccess = (data) => {
-    setUser(data.user || { name: "User" }); // fallback if no user object
-    setCurrentPage("home");
+    setUser(data.user || { name: "User" });
+    navigate("/home");
   };
 
-  const handleRegisterSuccess = (data) => {
-    setTimeout(() => setCurrentPage("login"), 2000);
+  const handleRegisterSuccess = () => {
+    setTimeout(() => navigate("/login"), 2000);
   };
 
   const handleLogout = () => {
     setUser(null);
-    setCurrentPage("login");
+    navigate("/login");
   };
 
   return (
-    <div>
-      {currentPage === "login" && (
-        <LoginPage
-          onRegisterClick={() => setCurrentPage("register")}
-          onLoginSuccess={handleLoginSuccess}
+    <>
+      {user && <Navbar user={user} onLogout={handleLogout} />}
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            user ? (
+              <Navigate to="/home" />
+            ) : (
+              <LoginPage
+                onRegisterClick={() => navigate("/register")}
+                onLoginSuccess={handleLoginSuccess}
+              />
+            )
+          }
         />
-      )}
-      {currentPage === "register" && (
-        <RegisterPage
-          onLoginClick={() => setCurrentPage("login")}
-          onRegisterSuccess={handleRegisterSuccess}
+        <Route
+          path="/register"
+          element={
+            user ? (
+              <Navigate to="/home" />
+            ) : (
+              <RegisterPage
+                onLoginClick={() => navigate("/login")}
+                onRegisterSuccess={handleRegisterSuccess}
+              />
+            )
+          }
         />
-      )}
-      {currentPage === "home" && (
-        <HomePage user={user} onLogout={handleLogout} />
-      )}
-    </div>
+        <Route
+          path="/home"
+          element={
+            user ? (
+              <HomePage user={user} onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/marketplace"
+          element={
+            user ? <Marketplace user={user} /> : <Navigate to="/login" />
+          }
+        />
+        <Route path="*" element={<Navigate to={user ? "/home" : "/login"} />} />
+      </Routes>
+    </>
+  );
+};
+
+const App = () => {
+  const [user, setUser] = useState(null);
+
+  return (
+    <Router>
+      <AppRoutes user={user} setUser={setUser} />
+    </Router>
   );
 };
 
