@@ -1,18 +1,18 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import PersonIcon from "@mui/icons-material/Person";
 import {
+  Avatar,
   Box,
-  Typography,
-  TextField,
   Button,
+  Divider,
   List,
   ListItem,
-  Avatar,
-  Divider,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { getChatMessages, sendChatMessage } from "../api/chat";
-import PersonIcon from "@mui/icons-material/Person";
 import axios from "axios";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { io } from "socket.io-client";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -26,6 +26,25 @@ const ChatPage = ({ user }) => {
   const [input, setInput] = useState("");
   const [sellerName, setSellerName] = useState("Seller");
   const messagesEndRef = useRef(null);
+
+  const socket = useRef(null);
+
+  // Initialize Socket.IO connection
+  useEffect(() => {
+    socket.current = io("http://localhost:5000"); // Replace with your backend URL
+
+    // Join the chat room
+    socket.current.emit("joinRoom", { sellerId, listingId });
+
+    // Listen for incoming messages
+    socket.current.on("receiveMessage", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    return () => {
+      socket.current.disconnect();
+    };
+  }, [sellerId, listingId]);
 
   // Fetch seller name from backend
   useEffect(() => {
@@ -42,11 +61,17 @@ const ChatPage = ({ user }) => {
     if (sellerId) fetchSeller();
   }, [sellerId]);
 
-  // Fetch messages
+  // Fetch initial messages
   useEffect(() => {
     const fetchMessages = async () => {
-      const msgs = await getChatMessages({ sellerId, listingId });
-      setMessages(msgs);
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        `http://localhost:5000/api/chat?sellerId=${sellerId}&listingId=${listingId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setMessages(res.data);
     };
     fetchMessages();
   }, [sellerId, listingId]);
@@ -55,19 +80,21 @@ const ChatPage = ({ user }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async () => {
+  const handleSend = () => {
     if (!input.trim()) return;
-    console.log("Message being sent by:", {
-      userId: user._id,
-      userName: user.name,
-      userRole: user._id === sellerId ? "Seller" : "Buyer",
-    });
-    const msg = await sendChatMessage({
+
+    const message = {
       sellerId,
       listingId,
       text: input,
-    });
-    setMessages((prev) => [...prev, msg]);
+      senderId: user._id,
+    };
+
+    // Emit the message to the server
+    socket.current.emit("sendMessage", message);
+
+    // Optimistically update the UI
+    setMessages((prev) => [...prev, { ...message, createdAt: new Date() }]);
     setInput("");
   };
 
@@ -121,12 +148,6 @@ const ChatPage = ({ user }) => {
         <List sx={{ p: 0 }}>
           {messages.map((msg, idx) => {
             const isMe = msg.senderId === user._id;
-            console.log("Message:", {
-              text: msg.text,
-              sender: isMe ? "Me" : sellerName,
-              senderId: msg.senderId,
-              isSeller: msg.senderId === sellerId,
-            });
             return (
               <ListItem
                 key={idx}
@@ -171,19 +192,6 @@ const ChatPage = ({ user }) => {
                 >
                   {msg.text}
                 </Box>
-                {isMe && (
-                  <Avatar
-                    sx={{
-                      width: 32,
-                      height: 32,
-                      ml: 1,
-                      bgcolor: "#667eea",
-                      color: "#fff",
-                    }}
-                  >
-                    <PersonIcon fontSize="small" />
-                  </Avatar>
-                )}
               </ListItem>
             );
           })}
